@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bridleway Log</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/assets/css/styles.css">
+</head>
+<body>
+    <div id="app">
+        <div id="sidebar">
+            <h1>Bridleway Log</h1>
+
+            <div class="filter-section">
+                <h3>Filters</h3>
+
+                <label for="area-select">Area</label>
+                <select id="area-select">
+                    <option value="">All Areas</option>
+                </select>
+
+                <label for="type-select">Path Type</label>
+                <select id="type-select">
+                    <option value="">All Types</option>
+                </select>
+
+                <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+            </div>
+
+            <div class="stats-section">
+                <h3>Statistics</h3>
+                <div id="stats-panel">
+                    <p>Loading...</p>
+                </div>
+            </div>
+
+            <div class="unit-toggle">
+                <label>
+                    <input type="checkbox" id="unit-toggle">
+                    Show distances in miles
+                </label>
+            </div>
+        </div>
+
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/assets/js/main.js"></script>
+</body>
+</html>

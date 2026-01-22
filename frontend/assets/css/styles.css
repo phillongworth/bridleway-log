@@ -1,0 +1,219 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+#app {
+    display: flex;
+    height: 100vh;
+}
+
+#sidebar {
+    width: 300px;
+    background: #f8f9fa;
+    padding: 20px;
+    overflow-y: auto;
+    border-right: 1px solid #dee2e6;
+}
+
+#sidebar h1 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #2d5016;
+}
+
+#sidebar h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #6c757d;
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+}
+
+.filter-section,
+.stats-section,
+.unit-toggle {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.filter-section label,
+.unit-toggle label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    color: #495057;
+}
+
+.filter-section select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    background: white;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-primary {
+    width: 100%;
+    background: #2d5016;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1e3a0f;
+}
+
+.btn-primary:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+#stats-panel {
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+#stats-panel .stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+#stats-panel .stat-label {
+    color: #6c757d;
+}
+
+#stats-panel .stat-value {
+    font-weight: 600;
+    color: #212529;
+}
+
+#stats-panel .stat-group {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e9ecef;
+}
+
+#stats-panel .stat-group-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.unit-toggle label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.unit-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+#map {
+    flex: 1;
+    height: 100%;
+}
+
+/* Path type colors */
+.path-footpath { color: #e74c3c; }
+.path-bridleway { color: #3498db; }
+.path-restricted-byway { color: #9b59b6; }
+.path-boat { color: #27ae60; }
+
+/* Leaflet popup styling */
+.leaflet-popup-content {
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.leaflet-popup-content strong {
+    color: #2d5016;
+}
+
+.path-popup-content {
+    min-width: 180px;
+}
+
+.path-popup-content .popup-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.path-popup-content .popup-row:last-child {
+    border-bottom: none;
+}
+
+.path-popup-content .popup-label {
+    color: #6c757d;
+}
+
+/* Loading state */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Legend */
+.legend {
+    background: white;
+    padding: 10px 15px;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    font-size: 0.8rem;
+    line-height: 1.8;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-color {
+    width: 20px;
+    height: 4px;
+    border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+    #app {
+        flex-direction: column;
+    }
+
+    #sidebar {
+        width: 100%;
+        height: auto;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    #map {
+        height: 60vh;
+    }
+}
