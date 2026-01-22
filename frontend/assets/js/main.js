@@ -111,21 +111,21 @@ async function loadFilters() {
         const areasData = await areasRes.json();
         const typesData = await typesRes.json();
 
-        const areaSelect = document.getElementById('area-select');
-        areasData.areas.forEach(area => {
-            const option = document.createElement('option');
-            option.value = area;
-            option.textContent = area;
-            areaSelect.appendChild(option);
-        });
+        const areaFilters = document.getElementById('area-filters');
+        areaFilters.innerHTML = areasData.areas.map(area => `
+            <label>
+                <input type="checkbox" name="area" value="${area}">
+                ${area}
+            </label>
+        `).join('');
 
-        const typeSelect = document.getElementById('type-select');
-        typesData.path_types.forEach(type => {
-            const option = document.createElement('option');
-            option.value = type;
-            option.textContent = type;
-            typeSelect.appendChild(option);
-        });
+        const typeFilters = document.getElementById('type-filters');
+        typeFilters.innerHTML = typesData.path_types.map(type => `
+            <label>
+                <input type="checkbox" name="path_type" value="${type}">
+                ${type}
+            </label>
+        `).join('');
     } catch (err) {
         console.error('Error loading filters:', err);
     }
@@ -173,8 +173,14 @@ async function loadStats() {
 }
 
 async function loadPaths() {
-    const area = document.getElementById('area-select').value;
-    const pathType = document.getElementById('type-select').value;
+    const selectedAreas = Array.from(
+        document.querySelectorAll('#area-filters input[type="checkbox"]:checked')
+    ).map(cb => cb.value);
+
+    const selectedTypes = Array.from(
+        document.querySelectorAll('#type-filters input[type="checkbox"]:checked')
+    ).map(cb => cb.value);
+
     const btn = document.getElementById('apply-filters');
 
     btn.disabled = true;
@@ -182,8 +188,8 @@ async function loadPaths() {
 
     try {
         const params = new URLSearchParams();
-        if (area) params.set('area', area);
-        if (pathType) params.set('path_type', pathType);
+        selectedAreas.forEach(area => params.append('area', area));
+        selectedTypes.forEach(type => params.append('path_type', type));
 
         const url = `${API_BASE}/paths${params.toString() ? '?' + params.toString() : ''}`;
         const res = await fetch(url);
@@ -205,6 +211,13 @@ async function loadPaths() {
 
 function setupEventListeners() {
     document.getElementById('apply-filters').addEventListener('click', loadPaths);
+
+    document.getElementById('clear-filters').addEventListener('click', () => {
+        document.querySelectorAll('.checkbox-group input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+        loadPaths();
+    });
 
     document.getElementById('unit-toggle').addEventListener('change', (e) => {
         useImperial = e.target.checked;

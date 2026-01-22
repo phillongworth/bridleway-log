@@ -53,14 +53,39 @@ body {
     color: #495057;
 }
 
-.filter-section select {
-    width: 100%;
-    padding: 8px 10px;
-    margin-bottom: 15px;
+.checkbox-group {
+    background: white;
     border: 1px solid #ced4da;
     border-radius: 4px;
-    font-size: 0.9rem;
-    background: white;
+    padding: 8px;
+    margin-bottom: 15px;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.checkbox-group .loading-text {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.checkbox-group label:hover {
+    background: #f8f9fa;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
 }
 
 .btn {
@@ -86,6 +111,17 @@ body {
 .btn-primary:disabled {
     background: #6c757d;
     cursor: not-allowed;
+}
+
+.btn-secondary {
+    width: 100%;
+    background: #6c757d;
+    color: white;
+    margin-top: 8px;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
 }
 
 #stats-panel {

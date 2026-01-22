@@ -15,17 +15,18 @@
             <div class="filter-section">
                 <h3>Filters</h3>
 
-                <label for="area-select">Area</label>
-                <select id="area-select">
-                    <option value="">All Areas</option>
-                </select>
+                <label>Areas</label>
+                <div class="checkbox-group" id="area-filters">
+                    <p class="loading-text">Loading...</p>
+                </div>
 
-                <label for="type-select">Path Type</label>
-                <select id="type-select">
-                    <option value="">All Types</option>
-                </select>
+                <label>Path Types</label>
+                <div class="checkbox-group" id="type-filters">
+                    <p class="loading-text">Loading...</p>
+                </div>
 
                 <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
+                <button id="clear-filters" class="btn btn-secondary">Clear All</button>
             </div>
 
             <div class="stats-section">

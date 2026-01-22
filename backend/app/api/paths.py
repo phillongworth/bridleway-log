@@ -13,8 +13,8 @@ router = APIRouter()
 
 @router.get("/paths")
 def get_paths(
-    area: Optional[str] = Query(None),
-    path_type: Optional[str] = Query(None),
+    area: Optional[list[str]] = Query(None),
+    path_type: Optional[list[str]] = Query(None),
     db: Session = Depends(get_db)
 ):
     query = db.query(
@@ -29,9 +29,9 @@ def get_paths(
     )
 
     if area:
-        query = query.filter(Path.area == area)
+        query = query.filter(Path.area.in_(area))
     if path_type:
-        query = query.filter(Path.path_type == path_type)
+        query = query.filter(Path.path_type.in_(path_type))
 
     paths = query.all()
 
