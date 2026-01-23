@@ -6,3 +6,5 @@ psycopg2-binary==2.9.9
 python-dotenv==1.0.1
 numpy<2
 shapely==2.0.6
+gpxpy==1.6.2
+python-multipart==0.0.9

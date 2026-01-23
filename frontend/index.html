@@ -12,6 +12,17 @@
         <div id="sidebar">
             <h1>Bridleway Log</h1>
 
+            <div class="upload-section">
+                <h3>Upload GPX</h3>
+                <p class="upload-hint">Select one or more .gpx files</p>
+                <div class="upload-area">
+                    <input type="file" id="gpx-input" accept=".gpx" multiple>
+                </div>
+                <div id="file-count" class="file-count"></div>
+                <button id="upload-btn" class="btn btn-primary">Upload Now</button>
+                <div id="upload-status" class="upload-status"></div>
+            </div>
+
             <div class="filter-section">
                 <h3>Filters</h3>
 
@@ -25,6 +36,28 @@
                     <p class="loading-text">Loading...</p>
                 </div>
 
+                <label>Coverage Status</label>
+                <div class="radio-group" id="ridden-filter">
+                    <label>
+                        <input type="radio" name="ridden" value="all" checked>
+                        All paths
+                    </label>
+                    <label>
+                        <input type="radio" name="ridden" value="ridden">
+                        Ridden only
+                    </label>
+                    <label>
+                        <input type="radio" name="ridden" value="not_ridden">
+                        Not ridden only
+                    </label>
+                </div>
+
+                <label>Min Coverage</label>
+                <div class="slider-group">
+                    <input type="range" id="coverage-slider" min="0" max="100" value="0" step="10">
+                    <span id="coverage-value">0%</span>
+                </div>
+
                 <button id="apply-filters" class="btn btn-primary">Apply Filters</button>
                 <button id="clear-filters" class="btn btn-secondary">Clear All</button>
             </div>
@@ -36,12 +69,20 @@
                 </div>
             </div>
 
+            <div class="rides-section">
+                <h3>Uploaded Rides</h3>
+                <div id="rides-panel">
+                    <p class="loading-text">Loading...</p>
+                </div>
+            </div>
+
             <div class="unit-toggle">
                 <label>
                     <input type="checkbox" id="unit-toggle">
                     Show distances in miles
                 </label>
             </div>
+
         </div>
 
         <div id="map"></div>

@@ -101,6 +101,11 @@ def import_paths(filepath: str, area: str, clear_existing: bool = False):
             # Map StatusDesc to path_type
             path_type = props.get('StatusDesc', 'Unknown')
 
+            # Skip footpaths - they are not displayed or tracked
+            if path_type == 'Footpath':
+                skipped += 1
+                continue
+
             path = Path(
                 source_fid=str(props.get('fid', '')),
                 route_code=props.get('RouteCode', ''),
