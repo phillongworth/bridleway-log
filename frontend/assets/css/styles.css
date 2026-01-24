@@ -229,6 +229,39 @@ body {
     font-size: 0.85rem;
 }
 
+.form-group {
+    margin-bottom: 10px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    color: #495057;
+    margin-bottom: 4px;
+}
+
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 0.85rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: #2d5016;
+    box-shadow: 0 0 0 2px rgba(45, 80, 22, 0.1);
+}
+
+.form-group label:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
 .upload-results {
     background: white;
     border: 1px solid #ced4da;
@@ -248,7 +281,7 @@ body {
 }
 
 .upload-result.success {
-    color: #22c55e;
+    color: #2563eb;
 }
 
 .upload-result.warning {
@@ -257,7 +290,7 @@ body {
 
 .upload-result.error,
 .error {
-    color: #ef4444;
+    color: #dc2626;
 }
 
 /* Stats panel */
@@ -314,15 +347,41 @@ body {
     font-style: italic;
 }
 
-/* Coverage status colors */
+/* Coverage status colors (colorblind-friendly) */
 .status-ridden {
-    color: #22c55e;
+    color: #f59e0b;
     font-weight: 600;
 }
 
 .status-not-ridden {
-    color: #ef4444;
+    color: #2563eb;
     font-weight: 600;
+}
+
+/* Year filters */
+.year-filters {
+    margin-bottom: 15px;
+}
+
+.year-filters label:first-child {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.year-filters .checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 15px;
+}
+
+.year-filters .checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.85rem;
+    cursor: pointer;
 }
 
 /* Rides panel */
@@ -351,7 +410,7 @@ body {
     width: 14px;
     height: 14px;
     margin: 0;
-    accent-color: #f97316;
+    accent-color: #06b6d4;
 }
 
 .rides-list {
