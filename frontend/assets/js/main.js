@@ -1,6 +1,6 @@
 // Bridleway Log - Main JavaScript
 
-const API_BASE = '/api';
+const API_BASE = 'api';
 
 // Path color (all paths are now bridleways)
 const PATH_COLOR = '#3498db';
