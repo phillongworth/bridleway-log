@@ -14,8 +14,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 # Coverage parameters (can be made configurable via environment later)
-COVERAGE_MIN_FRACTION = 0.8  # 80% of path must be covered
+COVERAGE_MIN_FRACTION = 0.5  # 50% of path must be covered
 COVERAGE_BUFFER_METERS = 30  # 30 meter buffer around GPX tracks
+
+# Use British National Grid (EPSG:27700) for accurate UK distance calculations
+# Web Mercator (3857) has significant distortion at UK latitudes
+UK_SRID = 27700
 
 
 def recompute_coverage(db: Session, path_ids: Optional[list[int]] = None) -> int:
@@ -75,10 +79,10 @@ def recompute_coverage(db: Session, path_ids: Optional[list[int]] = None) -> int
     coverage_query = text(f"""
         WITH ride_buffer AS (
             -- Create a single buffered geometry from all rides
-            -- Transform to EPSG:3857 (Web Mercator) for meter-based buffer
+            -- Transform to British National Grid (EPSG:27700) for accurate UK measurements
             SELECT ST_Union(
                 ST_Buffer(
-                    ST_Transform(geometry, 3857),
+                    ST_Transform(geometry, {UK_SRID}),
                     :buffer_meters
                 )
             ) AS buffered_geom
@@ -91,15 +95,15 @@ def recompute_coverage(db: Session, path_ids: Optional[list[int]] = None) -> int
                 -- Calculate length of path that intersects with ride buffer
                 CASE
                     WHEN rb.buffered_geom IS NOT NULL AND ST_Intersects(
-                        ST_Transform(p.geometry, 3857),
+                        ST_Transform(p.geometry, {UK_SRID}),
                         rb.buffered_geom
                     ) THEN
                         ST_Length(
                             ST_Intersection(
-                                ST_Transform(p.geometry, 3857),
+                                ST_Transform(p.geometry, {UK_SRID}),
                                 rb.buffered_geom
                             )
-                        ) / NULLIF(ST_Length(ST_Transform(p.geometry, 3857)), 0)
+                        ) / NULLIF(ST_Length(ST_Transform(p.geometry, {UK_SRID})), 0)
                     ELSE 0.0
                 END AS coverage_frac,
                 -- Get the most recent ride date that intersects this path
@@ -109,8 +113,8 @@ def recompute_coverage(db: Session, path_ids: Optional[list[int]] = None) -> int
                     WHERE r.geometry IS NOT NULL
                       AND r.date_recorded IS NOT NULL
                       AND ST_DWithin(
-                          ST_Transform(p.geometry, 3857),
-                          ST_Transform(r.geometry, 3857),
+                          ST_Transform(p.geometry, {UK_SRID}),
+                          ST_Transform(r.geometry, {UK_SRID}),
                           :buffer_meters
                       )
                 ) AS last_ride_date

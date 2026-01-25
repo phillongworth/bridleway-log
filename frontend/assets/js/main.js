@@ -21,13 +21,60 @@ let useImperial = false;
 let currentRiddenFilter = 'all';  // Track current ridden filter for styling
 let allRides = [];  // Store all rides for filtering
 let selectedYears = new Set();  // Track selected years for ride filtering
+let currentBaseLayer;  // Track current base layer
+
+// Base map tile layers
+const baseMaps = {
+    osm: {
+        name: 'OpenStreetMap',
+        layer: () => L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 19
+        })
+    },
+    topo: {
+        name: 'OpenTopoMap',
+        layer: () => L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
+            maxZoom: 17
+        })
+    },
+    cycle: {
+        name: 'CyclOSM',
+        layer: () => L.tileLayer('https://{s}.tile-cyclosm.openstreetmap.fr/cyclosm/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.cyclosm.org">CyclOSM</a> &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 20
+        })
+    },
+    esriSat: {
+        name: 'Satellite',
+        layer: () => L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; <a href="https://www.esri.com">Esri</a> &mdash; Sources: Esri, Maxar, Earthstar Geographics',
+            maxZoom: 19
+        })
+    },
+    hybrid: {
+        name: 'Satellite + Roads',
+        layer: () => L.layerGroup([
+            L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; <a href="https://www.esri.com">Esri</a>',
+                maxZoom: 19
+            }),
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
+                maxZoom: 19,
+                opacity: 0.4
+            })
+        ])
+    }
+};
 
 // Initialize application
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
     loadFilters();
     loadStats();
-    loadPaths();
+    loadPaths(true);  // Initial load - fit bounds
     loadRides();
     setupEventListeners();
 });
@@ -36,9 +83,9 @@ function initMap() {
     // Center on Calderdale area
     map = L.map('map').setView([53.765, -1.99], 12);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>'
-    }).addTo(map);
+    // Add default base layer
+    currentBaseLayer = baseMaps.osm.layer();
+    currentBaseLayer.addTo(map);
 
     pathsLayer = L.geoJSON(null, {
         style: styleFeature,
@@ -49,6 +96,17 @@ function initMap() {
     ridesLayer = L.layerGroup().addTo(map);
 
     addLegend();
+    addLayerToggles();
+}
+
+function switchBaseMap(mapKey) {
+    if (currentBaseLayer) {
+        map.removeLayer(currentBaseLayer);
+    }
+    currentBaseLayer = baseMaps[mapKey].layer();
+    currentBaseLayer.addTo(map);
+    // Ensure base layer is below other layers
+    currentBaseLayer.bringToBack();
 }
 
 function styleFeature(feature) {
@@ -155,11 +213,78 @@ function addLegend() {
     legend.addTo(map);
 }
 
+function addLayerToggles() {
+    const control = L.control({ position: 'topright' });
+
+    control.onAdd = function() {
+        const div = L.DomUtil.create('div', 'layer-toggles');
+
+        // Build base map options
+        const baseMapOptions = Object.entries(baseMaps).map(([key, config]) => `
+            <label class="layer-toggle-item">
+                <input type="radio" name="basemap" value="${key}" ${key === 'osm' ? 'checked' : ''}>
+                <span>${config.name}</span>
+            </label>
+        `).join('');
+
+        div.innerHTML = `
+            <strong>Overlays</strong>
+            <label class="layer-toggle-item">
+                <input type="checkbox" id="toggle-bridleways" checked>
+                <span class="toggle-color" style="background: ${NOT_RIDDEN_COLOR}"></span>
+                <span>Bridleways</span>
+            </label>
+            <label class="layer-toggle-item">
+                <input type="checkbox" id="toggle-gpx" checked>
+                <span class="toggle-color" style="background: ${RIDE_TRACE_COLOR}"></span>
+                <span>GPX Traces</span>
+            </label>
+            <hr class="layer-divider">
+            <strong>Base Map</strong>
+            ${baseMapOptions}
+        `;
+
+        // Prevent map interactions when clicking on the control
+        L.DomEvent.disableClickPropagation(div);
+
+        return div;
+    };
+
+    control.addTo(map);
+
+    // Add event listeners after control is added to DOM
+    setTimeout(() => {
+        document.getElementById('toggle-bridleways').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                map.addLayer(pathsLayer);
+            } else {
+                map.removeLayer(pathsLayer);
+            }
+        });
+
+        document.getElementById('toggle-gpx').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                map.addLayer(ridesLayer);
+            } else {
+                map.removeLayer(ridesLayer);
+            }
+        });
+
+        // Base map radio buttons
+        document.querySelectorAll('input[name="basemap"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                switchBaseMap(e.target.value);
+            });
+        });
+    }, 0);
+}
+
 async function loadFilters() {
     try {
         const res = await fetch(`${API_BASE}/areas`);
         const areasData = await res.json();
 
+        // Populate area checkboxes for filtering
         const areaFilters = document.getElementById('area-filters');
         areaFilters.innerHTML = areasData.areas.map(area => `
             <label>
@@ -167,6 +292,19 @@ async function loadFilters() {
                 ${area}
             </label>
         `).join('');
+
+        // Populate area select dropdown for bridleways upload
+        const areaSelect = document.getElementById('area-select');
+        const currentValue = areaSelect.value;
+        areaSelect.innerHTML = `
+            <option value="">Select an area...</option>
+            ${areasData.areas.map(area => `<option value="${area}">${area}</option>`).join('')}
+            <option value="__new__">+ Add new area...</option>
+        `;
+        // Restore selection if it still exists
+        if (currentValue && currentValue !== '__new__') {
+            areaSelect.value = currentValue;
+        }
     } catch (err) {
         console.error('Error loading filters:', err);
     }
@@ -241,7 +379,7 @@ async function loadStats() {
     }
 }
 
-async function loadPaths() {
+async function loadPaths(fitBounds = false) {
     const selectedAreas = Array.from(
         document.querySelectorAll('#area-filters input[type="checkbox"]:checked')
     ).map(cb => cb.value);
@@ -280,7 +418,8 @@ async function loadPaths() {
         pathsLayer.clearLayers();
         pathsLayer.addData(data);
 
-        if (data.features.length > 0) {
+        // Only fit bounds on initial load, not when applying filters
+        if (fitBounds && data.features.length > 0) {
             map.fitBounds(pathsLayer.getBounds(), { padding: [20, 20] });
         }
     } catch (err) {
@@ -635,6 +774,30 @@ function setupEventListeners() {
         document.getElementById('coverage-value').textContent = `${e.target.value}%`;
     });
 
+    // Upload type selector
+    document.getElementById('upload-type').addEventListener('change', (e) => {
+        const gpxPanel = document.getElementById('gpx-upload-panel');
+        const bridlewaysPanel = document.getElementById('bridleways-upload-panel');
+        if (e.target.value === 'gpx') {
+            gpxPanel.style.display = 'block';
+            bridlewaysPanel.style.display = 'none';
+        } else {
+            gpxPanel.style.display = 'none';
+            bridlewaysPanel.style.display = 'block';
+        }
+    });
+
+    // Area select for bridleways upload
+    document.getElementById('area-select').addEventListener('change', (e) => {
+        const newAreaGroup = document.getElementById('new-area-group');
+        if (e.target.value === '__new__') {
+            newAreaGroup.style.display = 'block';
+            document.getElementById('area-name').focus();
+        } else {
+            newAreaGroup.style.display = 'none';
+        }
+    });
+
     // File input - show selected file count
     document.getElementById('gpx-input').addEventListener('change', (e) => {
         const fileCount = e.target.files.length;
@@ -657,6 +820,7 @@ function setupEventListeners() {
 
 async function uploadBridleways() {
     const input = document.getElementById('geojson-input');
+    const areaSelect = document.getElementById('area-select');
     const areaInput = document.getElementById('area-name');
     const clearExisting = document.getElementById('clear-existing').checked;
     const statusDiv = document.getElementById('geojson-upload-status');
@@ -668,9 +832,18 @@ async function uploadBridleways() {
         return;
     }
 
-    const areaName = areaInput.value.trim();
-    if (!areaName) {
-        statusDiv.innerHTML = '<p class="error">Please enter an area name</p>';
+    // Get area name from select or text input
+    let areaName;
+    if (areaSelect.value === '__new__') {
+        areaName = areaInput.value.trim();
+        if (!areaName) {
+            statusDiv.innerHTML = '<p class="error">Please enter a new area name</p>';
+            return;
+        }
+    } else if (areaSelect.value) {
+        areaName = areaSelect.value;
+    } else {
+        statusDiv.innerHTML = '<p class="error">Please select an area</p>';
         return;
     }
 
@@ -701,11 +874,13 @@ async function uploadBridleways() {
 
             // Clear inputs
             input.value = '';
+            areaSelect.value = '';
             areaInput.value = '';
+            document.getElementById('new-area-group').style.display = 'none';
             document.getElementById('clear-existing').checked = false;
 
-            // Reload filters, stats, and paths to show new area
-            await Promise.all([loadFilters(), loadStats(), loadPaths()]);
+            // Reload filters, stats, and paths to show new area (fit bounds to show imported data)
+            await Promise.all([loadFilters(), loadStats(), loadPaths(true)]);
         } else {
             statusDiv.innerHTML = `<p class="error">Error: ${data.detail || 'Import failed'}</p>`;
         }

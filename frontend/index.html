@@ -13,34 +13,50 @@
             <h1>Bridleway Log</h1>
 
             <div class="upload-section">
-                <h3>Upload GPX</h3>
-                <p class="upload-hint">Select one or more .gpx files</p>
-                <div class="upload-area">
-                    <input type="file" id="gpx-input" accept=".gpx" multiple>
+                <h3>Upload Data</h3>
+                <div class="form-group">
+                    <label for="upload-type">Upload Type</label>
+                    <select id="upload-type" class="form-select">
+                        <option value="gpx">GPX Rides</option>
+                        <option value="bridleways">Bridleway Data (GeoJSON)</option>
+                    </select>
                 </div>
-                <div id="file-count" class="file-count"></div>
-                <button id="upload-btn" class="btn btn-primary">Upload Now</button>
-                <div id="upload-status" class="upload-status"></div>
-            </div>
 
-            <div class="upload-section">
-                <h3>Upload Bridleways</h3>
-                <p class="upload-hint">Import GeoJSON bridleway data for an area</p>
-                <div class="upload-area">
-                    <input type="file" id="geojson-input" accept=".json,.geojson">
+                <div id="gpx-upload-panel">
+                    <p class="upload-hint">Select one or more .gpx files</p>
+                    <div class="upload-area">
+                        <input type="file" id="gpx-input" accept=".gpx" multiple>
+                    </div>
+                    <div id="file-count" class="file-count"></div>
+                    <button id="upload-btn" class="btn btn-primary">Upload GPX</button>
+                    <div id="upload-status" class="upload-status"></div>
                 </div>
-                <div class="form-group">
-                    <label for="area-name">Area Name</label>
-                    <input type="text" id="area-name" placeholder="e.g. Bradford, Wakefield">
+
+                <div id="bridleways-upload-panel" style="display: none;">
+                    <p class="upload-hint">Import GeoJSON bridleway data for an area</p>
+                    <div class="upload-area">
+                        <input type="file" id="geojson-input" accept=".json,.geojson">
+                    </div>
+                    <div class="form-group">
+                        <label for="area-select">Area</label>
+                        <select id="area-select" class="form-select">
+                            <option value="">Select an area...</option>
+                            <option value="__new__">+ Add new area...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="new-area-group" style="display: none;">
+                        <label for="area-name">New Area Name</label>
+                        <input type="text" id="area-name" placeholder="e.g. Bradford, Wakefield">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="clear-existing">
+                            Replace existing data for this area
+                        </label>
+                    </div>
+                    <button id="upload-geojson-btn" class="btn btn-primary">Import Bridleways</button>
+                    <div id="geojson-upload-status" class="upload-status"></div>
                 </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="clear-existing">
-                        Replace existing data for this area
-                    </label>
-                </div>
-                <button id="upload-geojson-btn" class="btn btn-primary">Import Bridleways</button>
-                <div id="geojson-upload-status" class="upload-status"></div>
             </div>
 
             <div class="filter-section">
