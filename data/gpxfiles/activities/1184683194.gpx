@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="activities_processor"
+  xmlns="http://www.topografix.com/GPX/1/1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <trk>
+    <name>Activity</name>
+    <trkseg>
+      <trkpt lat="53.6159770" lon="-1.9100440">
+        <ele>160.8</ele>
+        <time>2016-03-30T07:05:05Z</time>
+      </trkpt>
+      <trkpt lat="53.6312530" lon="-1.8467310">
+        <ele>148.8</ele>
+        <time>2016-03-30T07:24:46Z</time>
+      </trkpt>
+      <trkpt lat="53.6316990" lon="-1.8458140">
+        <ele>141.4</ele>
+        <time>2016-03-30T07:25:05Z</time>
+      </trkpt>
+      <trkpt lat="53.6320920" lon="-1.8449240">
+        <ele>141.4</ele>
+        <time>2016-03-30T07:25:25Z</time>
+      </trkpt>
+      <trkpt lat="53.6325320" lon="-1.8437370">
+        <ele>141.4</ele>
+        <time>2016-03-30T07:25:50Z</time>
+      </trkpt>
+      <trkpt lat="53.6370790" lon="-1.8257610">
+        <ele>141.4</ele>
+        <time>2016-03-30T07:29:22Z</time>
+      </trkpt>
+      <trkpt lat="53.6418400" lon="-1.7910230">
+        <ele>129.4</ele>
+        <time>2016-03-30T07:36:04Z</time>
+      </trkpt>
+      <trkpt lat="53.6471540" lon="-1.7816010">
+        <ele>125.0</ele>
+        <time>2016-03-30T07:46:27Z</time>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
